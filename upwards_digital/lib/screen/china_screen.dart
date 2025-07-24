@@ -97,6 +97,7 @@ class ChinaScreen extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Грузы на складе в Китае',
@@ -106,26 +107,9 @@ class ChinaScreen extends StatelessWidget {
                     color: AppColors.mainTextColor,
                   ),
                 ),
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      width: isTablet ? 240 : 180,
-                      height: 40,
-                      margin: const EdgeInsets.only(right: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Введите номер груза',
-                          border: InputBorder.none,
-                          suffixIcon: Icon(Icons.search),
-                        ),
-                      ),
-                    ),
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
@@ -143,51 +127,91 @@ class ChinaScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: isTablet ? 240 : 180,
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Введите номер груза',
+                          border: InputBorder.none,
+                          suffixIcon: Icon(Icons.search),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: isTablet ? 500 : 350,
-                  maxWidth: isTablet ? screenWidth * 1.2 : screenWidth * 1.2,
-                ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: isTablet ? screenWidth * 1.1 : screenWidth * 1.5,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final maxWidth = constraints.maxWidth;
+                  final tableMinWidth = isTablet ? 800.0 : 600.0;
+
+                  final tableWidth = tableMinWidth > maxWidth
+                      ? maxWidth
+                      : tableMinWidth;
+                  final fontSize = isTablet ? 14.0 : 12.0;
+                  final showCommentColumn = isTablet;
+
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minWidth: tableWidth),
                       child: DataTable(
                         headingRowColor: MaterialStateProperty.all(
                           AppColors.borderColor,
                         ),
                         headingTextStyle: const TextStyle(color: Colors.white),
                         dataRowMinHeight: 48,
-                        columnSpacing: isTablet ? 30 : 16,
-                        columns: const [
-                          DataColumn(label: Text('Код клиента')),
-                          DataColumn(label: Text('Номер груза')),
-                          DataColumn(label: Text('Категория товара')),
-                          DataColumn(label: Text('Количество мест')),
-                          DataColumn(label: Text('Статус')),
-                          DataColumn(label: Text('Комментарий')),
-                          DataColumn(label: Icon(Icons.remove_red_eye)),
-                          DataColumn(label: Icon(Icons.edit)),
-                          DataColumn(label: Icon(Icons.delete)),
+                        columnSpacing: isTablet ? 24 : 12,
+                        columns: [
+                          const DataColumn(label: Text('Код клиента')),
+                          const DataColumn(label: Text('Номер груза')),
+                          const DataColumn(label: Text('Категория товара')),
+                          const DataColumn(label: Text('Количество мест')),
+                          const DataColumn(label: Text('Статус')),
+                          if (showCommentColumn)
+                            const DataColumn(label: Text('Комментарий')),
+                          const DataColumn(label: Icon(Icons.remove_red_eye)),
+                          const DataColumn(label: Icon(Icons.edit)),
+                          const DataColumn(label: Icon(Icons.delete)),
                         ],
-                        rows: List.generate(chinaItems.length, (index) {
-                          final item = chinaItems[index];
-                          final showRedDot = index < 4;
-
+                        rows: chinaItems.map((item) {
                           return DataRow(
                             cells: [
-                              DataCell(Text(item['clientCode']!)),
-                              DataCell(Text(item['cargoNumber']!)),
-                              DataCell(Text(item['category']!)),
-                              DataCell(Text(item['quantity']!)),
+                              DataCell(
+                                Text(
+                                  item['clientCode']!,
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  item['cargoNumber']!,
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  item['category']!,
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  item['quantity']!,
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ),
                               DataCell(
                                 Text(
                                   item['status']!,
@@ -196,40 +220,41 @@ class ChinaScreen extends StatelessWidget {
                                         ? Colors.green
                                         : Colors.black,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: fontSize,
                                   ),
                                 ),
                               ),
-                              DataCell(
-                                Text(
-                                  item['comment']!,
-                                  overflow: TextOverflow.ellipsis,
+                              if (showCommentColumn)
+                                DataCell(
+                                  Text(
+                                    item['comment']!,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: fontSize),
+                                  ),
                                 ),
-                              ),
                               DataCell(
                                 Row(
-                                  children: [
-                                    if (showRedDot)
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 6.0),
-                                        child: Icon(
-                                          Icons.circle,
-                                          color: Colors.red,
-                                          size: 8,
-                                        ),
-                                      ),
-                                    const Icon(Icons.remove_red_eye_outlined),
+                                  children: const [
+                                    Icon(
+                                      Icons.remove_red_eye_outlined,
+                                      size: 18,
+                                    ),
                                   ],
                                 ),
                               ),
-                              const DataCell(Icon(Icons.edit_outlined)),
-                              const DataCell(Icon(Icons.delete_outline)),
+                              const DataCell(
+                                Icon(Icons.edit_outlined, size: 18),
+                              ),
+                              const DataCell(
+                                Icon(Icons.delete_outline, size: 18),
+                              ),
                             ],
                           );
-                        }),
+                        }).toList(),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],
