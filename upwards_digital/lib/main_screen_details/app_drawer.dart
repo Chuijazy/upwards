@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upwards_digital/core/app_colors.dart';
+import 'package:upwards_digital/screen/china_screen.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -42,14 +43,26 @@ class _AppDrawerState extends State<AppDrawer> {
               _buildSubItem(
                 title: 'На складе в Китае',
                 iconPath: 'assets/icons/home.png',
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ChinaScreen()),
+                  );
+                },
               ),
               _buildSubItem(
                 title: 'Сортировка',
                 iconPath: 'assets/icons/pencil.png',
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
               _buildSubItem(
                 title: 'Отправки',
                 iconPath: 'assets/icons/truck.png',
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
@@ -57,16 +70,6 @@ class _AppDrawerState extends State<AppDrawer> {
             backgroundColor: AppColors.backgroundColor,
             leading: Image.asset('assets/icons/parcels.png'),
             title: const Text('Посылки'),
-            children: [
-              _buildSubItem(
-                title: 'Ожидаются',
-                iconPath: 'assets/icons/clock.png',
-              ),
-              _buildSubItem(
-                title: 'Получены',
-                iconPath: 'assets/icons/checkmark.png',
-              ),
-            ],
           ),
           ListTile(
             leading: Image.asset('assets/icons/leave.png', height: 24),
@@ -78,7 +81,11 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  Widget _buildSubItem({required String title, required String iconPath}) {
+  Widget _buildSubItem({
+    required String title,
+    required String iconPath,
+    required VoidCallback onTap,
+  }) {
     final bool isSelected = _selectedSubItem == title;
 
     return ListTile(
@@ -97,7 +104,7 @@ class _AppDrawerState extends State<AppDrawer> {
         setState(() {
           _selectedSubItem = title;
         });
-        Navigator.pop(context);
+        onTap();
       },
     );
   }

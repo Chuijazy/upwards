@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:upwards_digital/screen_details/app_drawer.dart';
-import 'package:upwards_digital/screen_details/user_header.dart';
+import 'package:upwards_digital/core/app_colors.dart';
+import 'package:upwards_digital/main_screen_details/app_drawer.dart';
+import 'package:upwards_digital/main_screen_details/user_header.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -11,21 +12,17 @@ class MainScreen extends StatelessWidget {
     final isTablet = screenWidth > 600;
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       drawer: const AppDrawer(),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(isTablet ? 80 : 56),
         child: UserHeader(isTablet: isTablet),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Container(
-              color: Colors.grey[200],
-              child: Center(child: Text('Основной контент')),
-            ),
-          ),
-        ],
+      body: Center(
+        child: Text(
+          'Главная страница. \nНажмите на меню слева для навигации.',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

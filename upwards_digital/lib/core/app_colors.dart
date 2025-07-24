@@ -7,4 +7,5 @@ abstract class AppColors {
   static Color mainTextColor = Color(0xff000032);
   static Color secondaryTextColor = Color(0xff525F7F);
   static Color backgroundColor = Color(0xffF7F8FC);
+  static Color borderColor = Color(0xff0061C2);
 }
